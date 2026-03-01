@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic League | The Master Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: #38bdf8;
+            transform: translateY(-4px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #login-overlay {
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 1000;
+        }
+
+        .hidden-section { display: none; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Auth Overlay -->
+    <div id="login-overlay" class="fixed inset-0 flex items-center justify-center">
+        <div class="glass-card p-8 rounded-2xl max-w-md w-full text-center shadow-2xl">
+            <h1 class="text-4xl font-bold mb-4 gradient-text">Logic League</h1>
+            <p class="text-slate-400 mb-8">Access Tactical Scholar, AI Muckiest Platform, and the Game Arena.</p>
+            <button id="google-signin" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-bold py-3 px-6 rounded-lg hover:bg-slate-100 transition duration-300">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-6 h-6" alt="Google">
+                Sign in with Google
+            </button>
+            <p id="auth-status" class="mt-4 text-sm text-red-400"></p>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden until Login) -->
+    <div id="main-app" class="hidden-section">
+        <!-- Navigation -->
+        <nav class="sticky top-0 z-50 glass-card border-b border-slate-800 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-500 p-2 rounded-lg">
+                        <i class="fas fa-brain text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight">LOGIC LEAGUE</span>
+                </div>
+                
+                <div class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+                    <a href="#" class="hover:text-blue-400 transition">Tactical Scholar</a>
+                    <a href="#" class="hover:text-blue-400 transition">AI Platform</a>
+                    <a href="#" class="hover:text-blue-400 transition">Game Arena</a>
+                    <a href="#" class="hover:text-blue-400 transition" onclick="showStakeholderInfo()">Stakeholder Docs</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p id="user-name" class="text-sm font-semibold"></p>
+                        <p id="user-email" class="text-xs text-slate-500"></p>
+                    </div>
+                    <img id="user-photo" src="" alt="Profile" class="w-10 h-10 rounded-full border border-blue-500">
+                    <button id="signout" class="text-slate-400 hover:text-white"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero / Dashboard -->
+        <main class="max-w-7xl mx-auto px-6 py-12">
+            <header class="mb-12">
+                <h2 class="text-3xl font-bold mb-2">Welcome back, Scholar.</h2>
+                <p class="text-slate-400">Your current progress: <span class="text-blue-400">Practice Paper 1 Module 1</span> is ready for review.</p>
+            </header>
+
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Tactical Scholar Module -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-blue-400 mb-4 text-2xl"><i class="fas fa-graduation-cap"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Tactical Scholar</h3>
+                        <p class="text-slate-400 text-sm mb-6">Review your Notion guides and tackle logic practice papers.</p>
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-semibold transition">Launch Learning</button>
+                </div>
+
+                <!-- AI Platform -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="text-purple-400 mb-4 text-2xl"><i class="fas fa-robot"></i></div>
+                        <h3 class="text-xl font-bold mb-2">AI Muckiest Platform</h3>
+                        <p class="text-slate-400 text-sm mb-6">Experimental AI tools and strategy simulations.</p>
+                    </div>
+                    <button class="w-full bg-purple-600 hover:bg-purple-500 py-2 rounded-lg font-semibold transition">Open Lab</button>
+                </div>
+
+                <!-- One-Click Add Game Button (Simulated) -->
+                <div id="add-game-trigger" class="glass-card p-6 rounded-2xl border-dashed border-2 border-slate-700 flex flex-center items-center justify-center cursor-pointer hover:bg-slate-800/50">
+                    <div class="text-center">
+                        <i class="fas fa-plus-circle text-3xl text-slate-500 mb-2"></i>
+                        <p class="text-slate-500 font-medium">Add New Game</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Game Arena Section -->
+            <section class="mt-16">
+                <div class="flex justify-between items-end mb-8">
+                    <h2 class="text-2xl font-bold">Game Arena</h2>
+                    <span class="text-blue-400 text-sm cursor-pointer">View All Games →</span>
+                </div>
+                <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Games will be injected here via JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // ==========================================
+        // UPDATE YOUR FIREBASE INFO HERE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcPl_9aLAzUuj13LIuMOBtYdr9O-UCgzo",
+            authDomain: "logic-league-6a0a0.firebaseapp.com",
+            projectId: "logic-league-6a0a0",
+            storageBucket: "logic-league-6a0a0.firebasestorage.app",
+            messagingSenderId: "543952620104",
+            appId: "1:543952620104:web:c02589102c328dc4be267d"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const loginOverlay = document.getElementById('login-overlay');
+        const mainApp = document.getElementById('main-app');
+        const authStatus = document.getElementById('auth-status');
+
+        // Sign In Logic
+        document.getElementById('google-signin').onclick = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                authStatus.innerText = "Error signing in. Please check Firebase config.";
+                console.error(error);
+            }
+        };
+
+        // Sign Out Logic
+        document.getElementById('signout').onclick = () => {
+            signOut(auth);
+        };
+
+        // Auth State Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginOverlay.classList.add('hidden-section');
+                mainApp.classList.remove('hidden-section');
+                
+                // Update UI with User Data
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-email').innerText = user.email;
+                document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/40';
+                
+                loadGames(); // Load games from our "One-Click" engine
+            } else {
+                loginOverlay.classList.remove('hidden-section');
+                mainApp.classList.add('hidden-section');
+            }
+        });
+
+        // ==========================================
+        // THE "ONE-CLICK" GAME ENGINE
+        // ==========================================
+        const games = [
+            { id: 1, title: "Tactical Scholar v1", cat: "Strategy", icon: "fa-chess-knight", color: "text-amber-400" },
+            { id: 2, title: "Logic Scorer", cat: "Puzzle", icon: "fa-calculator", color: "text-emerald-400" },
+            { id: 3, title: "AI Prompt War", cat: "AI Game", icon: "fa-terminal", color: "text-pink-400" }
+        ];
+
+        function loadGames() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+            games.forEach(game => {
+                const card = `
+                    <div class="glass-card p-5 rounded-xl cursor-pointer">
+                        <div class="${game.color} text-2xl mb-4"><i class="fas ${game.icon}"></i></div>
+                        <h4 class="font-bold text-lg">${game.title}</h4>
+                        <p class="text-xs text-slate-500 mb-4">${game.cat}</p>
+                        <button class="text-xs font-bold text-blue-400 hover:text-blue-300">PLAY NOW</button>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        // Simple "One-Click" simulation
+        document.getElementById('add-game-trigger').onclick = () => {
+            const name = prompt("Enter Game Title:");
+            if(name) {
+                games.push({ id: Date.now(), title: name, cat: "User Added", icon: "fa-gamepad", color: "text-blue-400" });
+                loadGames();
+            }
+        };
+
+    </script>
+</body>
+</html>
