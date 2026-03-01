@@ -3,235 +3,586 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic League | The Master Hub</title>
+    <title>Grade 10: Life Processes - Respiration</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- MathJax Configuration for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+        body { 
+            font-family: 'Inter', sans-serif; 
+            height: 100dvh;
+            overflow: hidden;
         }
 
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+        .notion-shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #121212; color: #e2e8f0; }
+            .panel { background-color: #1e1e1e; border-color: #2d2d2d; }
+            .option-btn { background-color: #2a2a2a; border-color: #3a3a3a; }
+            .option-btn:hover:not(:disabled) { background-color: #333333; }
+            .note-panel { background-color: #111827; border-color: #1f2937; } /* Darker slate for biology */
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #4a5568; }
         }
 
-        .glass-card:hover {
-            border-color: #38bdf8;
-            transform: translateY(-4px);
-        }
-
-        .gradient-text {
-            background: linear-gradient(90deg, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        #login-overlay {
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 1000;
-        }
-
-        .hidden-section { display: none; }
+        .option-btn.correct { background-color: #065f46 !important; border-color: #059669 !important; color: white; }
+        .option-btn.incorrect { background-color: #991b1b !important; border-color: #dc2626 !important; color: white; }
+        
+        mjx-container { font-size: 105%; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-slate-50 text-slate-900">
 
-    <!-- Auth Overlay -->
-    <div id="login-overlay" class="fixed inset-0 flex items-center justify-center">
-        <div class="glass-card p-8 rounded-2xl max-w-md w-full text-center shadow-2xl">
-            <h1 class="text-4xl font-bold mb-4 gradient-text">Logic League</h1>
-            <p class="text-slate-400 mb-8">Access Tactical Scholar, AI Muckiest Platform, and the Game Arena.</p>
-            <button id="google-signin" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-bold py-3 px-6 rounded-lg hover:bg-slate-100 transition duration-300">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-6 h-6" alt="Google">
-                Sign in with Google
-            </button>
-            <p id="auth-status" class="mt-4 text-sm text-red-400"></p>
+<div id="app" class="h-[100dvh] flex flex-col p-4 md:p-6 lg:p-8">
+    
+    <!-- Landing State -->
+    <div id="landing" class="m-auto max-w-2xl w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
+        <div class="inline-flex p-5 bg-emerald-600 text-white rounded-3xl shadow-xl shadow-emerald-200">
+            <i class="fas fa-lungs text-4xl"></i>
         </div>
+        <div class="space-y-2">
+            <h1 class="text-4xl font-black tracking-tight lg:text-5xl">Life Processes</h1>
+            <p class="text-slate-500 text-lg">Grade 10 NCERT Chapter 6 • Module: Respiration</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="panel bg-white p-4 rounded-2xl border border-slate-200 notion-shadow">
+                <span class="block text-emerald-600 font-bold text-xl">20</span>
+                <span class="text-xs uppercase tracking-widest font-semibold opacity-60">Elite Questions</span>
+            </div>
+            <div class="panel bg-white p-4 rounded-2xl border border-slate-200 notion-shadow">
+                <span class="block text-teal-600 font-bold text-xl">Split</span>
+                <span class="text-xs uppercase tracking-widest font-semibold opacity-60">Insights Pane</span>
+            </div>
+            <div class="panel bg-white p-4 rounded-2xl border border-slate-200 notion-shadow">
+                <span class="block text-green-600 font-bold text-xl">Logic</span>
+                <span class="text-xs uppercase tracking-widest font-semibold opacity-60">Deep Theory</span>
+            </div>
+        </div>
+        <button onclick="startQuiz()" class="group relative w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xl hover:bg-black transition-all overflow-hidden">
+            <span class="relative z-10">Initialize Assessment</span>
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </button>
     </div>
 
-    <!-- Main Content (Hidden until Login) -->
-    <div id="main-app" class="hidden-section">
-        <!-- Navigation -->
-        <nav class="sticky top-0 z-50 glass-card border-b border-slate-800 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <div class="bg-blue-500 p-2 rounded-lg">
-                        <i class="fas fa-brain text-white"></i>
-                    </div>
-                    <span class="text-xl font-bold tracking-tight">LOGIC LEAGUE</span>
-                </div>
-                
-                <div class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
-                    <a href="#" class="hover:text-blue-400 transition">Tactical Scholar</a>
-                    <a href="#" class="hover:text-blue-400 transition">AI Platform</a>
-                    <a href="#" class="hover:text-blue-400 transition">Game Arena</a>
-                    <a href="#" class="hover:text-blue-400 transition" onclick="showStakeholderInfo()">Stakeholder Docs</a>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <div class="text-right hidden sm:block">
-                        <p id="user-name" class="text-sm font-semibold"></p>
-                        <p id="user-email" class="text-xs text-slate-500"></p>
-                    </div>
-                    <img id="user-photo" src="" alt="Profile" class="w-10 h-10 rounded-full border border-blue-500">
-                    <button id="signout" class="text-slate-400 hover:text-white"><i class="fas fa-sign-out-alt"></i></button>
+    <!-- Quiz State -->
+    <div id="quiz-container" class="hidden h-full flex flex-col gap-6">
+        
+        <!-- Header -->
+        <header class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="location.reload()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="h-10 w-px bg-slate-200 dark:bg-slate-700"></div>
+                <div>
+                    <h2 id="q-category" class="text-xs font-bold uppercase tracking-widest text-emerald-600">BIOLOGY</h2>
+                    <span id="q-counter" class="text-sm font-medium opacity-60">Question 01 of 20</span>
                 </div>
             </div>
-        </nav>
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex items-center gap-2">
+                    <span class="text-xs font-bold opacity-40">PROGRESS</span>
+                    <div class="w-32 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+                        <div id="progress-fill" class="h-full bg-emerald-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold text-sm">
+                    Score: <span id="current-score">00</span>
+                </div>
+            </div>
+        </header>
 
-        <!-- Hero / Dashboard -->
-        <main class="max-w-7xl mx-auto px-6 py-12">
-            <header class="mb-12">
-                <h2 class="text-3xl font-bold mb-2">Welcome back, Scholar.</h2>
-                <p class="text-slate-400">Your current progress: <span class="text-blue-400">Practice Paper 1 Module 1</span> is ready for review.</p>
-            </header>
-
-            <!-- Grid Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Main Workspace -->
+        <main class="flex-1 flex gap-6 overflow-hidden">
+            
+            <!-- Left Pane: Question & Options -->
+            <div id="question-pane" class="flex-1 panel bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-slate-800 rounded-3xl notion-shadow flex flex-col overflow-hidden transition-all duration-500">
+                <div class="flex-1 p-5 lg:p-8 overflow-y-auto custom-scrollbar flex flex-col gap-6">
+                    <h3 id="question-text" class="text-xl lg:text-2xl font-semibold leading-snug">
+                        Loading problem...
+                    </h3>
+                    
+                    <div id="options-grid" class="grid grid-cols-1 gap-3">
+                        <!-- Options go here -->
+                    </div>
+                </div>
                 
-                <!-- Tactical Scholar Module -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <div class="text-blue-400 mb-4 text-2xl"><i class="fas fa-graduation-cap"></i></div>
-                        <h3 class="text-xl font-bold mb-2">Tactical Scholar</h3>
-                        <p class="text-slate-400 text-sm mb-6">Review your Notion guides and tackle logic practice papers.</p>
-                    </div>
-                    <button class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-semibold transition">Launch Learning</button>
-                </div>
-
-                <!-- AI Platform -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <div class="text-purple-400 mb-4 text-2xl"><i class="fas fa-robot"></i></div>
-                        <h3 class="text-xl font-bold mb-2">AI Muckiest Platform</h3>
-                        <p class="text-slate-400 text-sm mb-6">Experimental AI tools and strategy simulations.</p>
-                    </div>
-                    <button class="w-full bg-purple-600 hover:bg-purple-500 py-2 rounded-lg font-semibold transition">Open Lab</button>
-                </div>
-
-                <!-- One-Click Add Game Button (Simulated) -->
-                <div id="add-game-trigger" class="glass-card p-6 rounded-2xl border-dashed border-2 border-slate-700 flex flex-center items-center justify-center cursor-pointer hover:bg-slate-800/50">
-                    <div class="text-center">
-                        <i class="fas fa-plus-circle text-3xl text-slate-500 mb-2"></i>
-                        <p class="text-slate-500 font-medium">Add New Game</p>
-                    </div>
-                </div>
-
+                <footer class="p-4 lg:p-5 bg-slate-50 dark:bg-[#151515] border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <span id="diff-tag" class="text-[10px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded bg-slate-200 dark:bg-slate-800">LEVEL: DIFFICULT</span>
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg flex items-center gap-2">
+                        Next <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </footer>
             </div>
 
-            <!-- Game Arena Section -->
-            <section class="mt-16">
-                <div class="flex justify-between items-end mb-8">
-                    <h2 class="text-2xl font-bold">Game Arena</h2>
-                    <span class="text-blue-400 text-sm cursor-pointer">View All Games →</span>
+            <!-- Right Pane: Split Insights -->
+            <aside id="insight-pane" class="hidden lg:flex w-0 opacity-0 flex-col gap-4 overflow-hidden transition-all duration-500">
+                <div class="flex-1 panel note-panel bg-slate-900 text-white p-6 lg:p-8 rounded-3xl overflow-y-auto custom-scrollbar flex flex-col">
+                    <div class="flex items-center gap-3 mb-6 text-emerald-400">
+                        <i class="fas fa-microscope text-xl"></i>
+                        <span class="text-xs font-black uppercase tracking-widest">Mastery Insight</span>
+                    </div>
+                    
+                    <div id="rationale-box" class="mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 hidden">
+                        <h4 class="text-sm font-bold text-teal-400 mb-2">Logic</h4>
+                        <p id="rationale-text" class="text-sm leading-relaxed opacity-80 italic"></p>
+                    </div>
+
+                    <div id="note-box" class="flex-1 hidden">
+                        <h4 class="text-sm font-bold text-emerald-400 mb-4">Theoretical Foundation</h4>
+                        <p id="note-text" class="text-sm leading-relaxed text-justify font-light opacity-90"></p>
+                    </div>
                 </div>
-                <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Games will be injected here via JS -->
-                </div>
-            </section>
+            </aside>
         </main>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <!-- Results State -->
+    <div id="results" class="hidden m-auto max-w-xl w-full panel bg-white dark:bg-[#1e1e1e] p-10 rounded-3xl border border-slate-200 dark:border-slate-800 notion-shadow text-center space-y-8">
+        <h2 class="text-3xl font-black italic">Assessment Terminal</h2>
+        
+        <div class="relative w-40 h-40 mx-auto">
+            <svg class="w-full h-full transform -rotate-90">
+                <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" class="text-slate-100 dark:text-slate-800"></circle>
+                <circle id="score-circle" cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" class="text-emerald-600" stroke-dasharray="439.6" stroke-dashoffset="439.6" style="transition: stroke-dashoffset 1.5s ease-out"></circle>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="final-pct" class="text-4xl font-black">0%</span>
+                <span class="text-[10px] font-bold opacity-40 uppercase">Accuracy</span>
+            </div>
+        </div>
 
-        // ==========================================
-        // UPDATE YOUR FIREBASE INFO HERE
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCcPl_9aLAzUuj13LIuMOBtYdr9O-UCgzo",
-  authDomain: "logic-league-6a0a0.firebaseapp.com",
-  projectId: "logic-league-6a0a0",
-  storageBucket: "logic-league-6a0a0.firebasestorage.app",
-  messagingSenderId: "543952620104",
-  appId: "1:543952620104:web:c02589102c328dc4be267d"
-        };
+        <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl">
+                <span id="final-correct" class="block text-2xl font-black text-emerald-600">0</span>
+                <span class="text-[10px] font-bold opacity-60 uppercase">Correct</span>
+            </div>
+            <div class="p-4 bg-rose-50 dark:bg-rose-950/20 rounded-2xl">
+                <span id="final-wrong" class="block text-2xl font-black text-rose-600">0</span>
+                <span class="text-[10px] font-bold opacity-60 uppercase">Deficit</span>
+            </div>
+        </div>
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-black transition-all">
+            Recalibrate System
+        </button>
+    </div>
+</div>
 
-        const loginOverlay = document.getElementById('login-overlay');
-        const mainApp = document.getElementById('main-app');
-        const authStatus = document.getElementById('auth-status');
+<script>
+    const questions = [
+        { 
+            q: "Which of the following accurately describes the initial step of glucose breakdown in all living organisms?", 
+            options: [
+                "It occurs in the mitochondria and forms carbon dioxide.", 
+                "It occurs in the cytoplasm and converts a 6-carbon glucose into two 3-carbon pyruvate molecules.", 
+                "It occurs in the chloroplast to synthesize starch.", 
+                "It requires oxygen to convert glucose directly into ATP."
+            ], 
+            correct: 1, 
+            rationale: "The first step of cellular respiration is glycolysis. This process strictly occurs in the cytoplasm and does not require oxygen, breaking down the 6-carbon glucose molecule into two 3-carbon molecules called pyruvate.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "The breakdown of glucose is a universally conserved metabolic pathway known as glycolysis. Regardless of whether an organism is a simple anaerobic bacterium or a complex human being, this initial step is exactly the same. It takes place entirely within the fluid of the cytoplasm, independent of any membrane-bound organelles like the mitochondria. During this step, the 6-carbon sugar glucose is split into two molecules of a 3-carbon compound called pyruvate. This process releases a small, but crucial, amount of energy. The subsequent fate of this pyruvate depends entirely on the presence or absence of oxygen in the cell. This shared biochemical origin underscores the evolutionary interconnectedness of all living organisms." 
+        },
+        { 
+            q: "In the absence of oxygen in yeast cells (fermentation), what are the end products of pyruvate metabolism?", 
+            options: [
+                "Lactic acid and Energy", 
+                "Carbon dioxide, Water, and Energy", 
+                "Ethanol, Carbon dioxide, and Energy", 
+                "Glucose and Oxygen"
+            ], 
+            correct: 2, 
+            rationale: "Yeast undergoes anaerobic respiration (fermentation) where the 3-carbon pyruvate is converted into ethanol (a 2-carbon molecule), carbon dioxide, and a small amount of energy.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "Yeast is a single-celled fungus that can survive in environments completely devoid of oxygen. When oxygen is absent, it metabolizes pyruvate through a process called alcoholic fermentation. The 3-carbon pyruvate is broken down into ethanol, which is a 2-carbon alcohol, alongside the release of carbon dioxide gas. This specific chemical pathway is heavily utilized by humans in the baking and brewing industries; the carbon dioxide makes bread dough rise, while the ethanol is the basis of alcoholic beverages. Because the breakdown of glucose is incomplete in the absence of oxygen, this process yields significantly less energy compared to aerobic respiration. Specifically, it only produces 2 ATP molecules per glucose molecule. Understanding this anaerobic pathway is essential for studying microbial metabolism and industrial biotechnology." 
+        },
+        { 
+            q: "A sudden lack of oxygen in human muscle cells during vigorous exercise leads to the conversion of pyruvate into:", 
+            options: [
+                "Ethanol (a 2-carbon molecule)", 
+                "Lactic acid (a 3-carbon molecule)", 
+                "Citric acid (a 6-carbon molecule)", 
+                "Carbon dioxide and Water"
+            ], 
+            correct: 1, 
+            rationale: "When human muscles lack oxygen during heavy exertion, pyruvate is converted into lactic acid, which is also a 3-carbon molecule, causing muscle cramps.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "During intense physical exercise, the cardiovascular system may fail to deliver oxygen to muscle cells rapidly enough to meet their energy demands. To continue generating ATP, the muscle cells switch to an emergency anaerobic pathway. Instead of being broken down in the mitochondria, the 3-carbon pyruvate remains in the cytoplasm and is converted into another 3-carbon compound called lactic acid. The sudden accumulation of this acid lowers the intracellular pH, leading to the painful sensation commonly known as muscle cramps. Once the exercise ceases and oxygen becomes available again, the lactic acid is transported to the liver and oxidized. This physiological mechanism ensures that muscles can operate temporarily even under extreme physiological stress. It highlights the remarkable adaptability of human cellular metabolism." 
+        },
+        { 
+            q: "Why do terrestrial organisms generally have a slower breathing rate compared to aquatic organisms like fishes?", 
+            options: [
+                "Terrestrial organisms have smaller lungs.", 
+                "The amount of dissolved oxygen in water is fairly low compared to the amount of oxygen in the air.", 
+                "Aquatic organisms need to conserve water.", 
+                "Terrestrial organisms require less energy."
+            ], 
+            correct: 1, 
+            rationale: "Water contains a much lower concentration of dissolved oxygen than the atmosphere. Therefore, aquatic organisms must breathe much faster to extract sufficient oxygen for their survival.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "The physical properties of an organism's environment dictate the evolutionary design of its respiratory system. The atmosphere contains approximately 21% oxygen, providing a rich and easily accessible supply for terrestrial animals. In contrast, the concentration of dissolved oxygen in water is significantly lower, typically less than 1%. Because of this scarcity, aquatic organisms like fishes must continuously and rapidly pump water over their gills to extract enough oxygen to meet their metabolic needs. Consequently, their breathing rate is inherently much faster than that of land-dwelling animals. Terrestrial organisms can afford to breathe more slowly and deeply without risking oxygen deprivation. This concept perfectly illustrates how physical chemistry influences biological form and function." 
+        },
+        { 
+            q: "What is the primary anatomical function of the rings of cartilage present in the human trachea?", 
+            options: [
+                "To filter dust and pathogens from the air.", 
+                "To ensure that the air passage does not collapse when there is less air in it.", 
+                "To absorb oxygen directly into the bloodstream.", 
+                "To produce vocal sounds during exhalation."
+            ], 
+            correct: 1, 
+            rationale: "The C-shaped cartilaginous rings provide structural support to the trachea, ensuring the airway remains permanently open even during the negative pressure of inhalation.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "The human trachea, or windpipe, is a vital biological tube connecting the larynx to the bronchi of the lungs. During the breathing cycle, especially during forceful inhalation, the pressure inside the chest cavity drops significantly. If the trachea were made solely of soft tissue, this negative pressure would cause the airway to collapse, much like a paper straw collapsing when you suck on it too hard. To prevent this fatal malfunction, the trachea is reinforced with C-shaped rings of tough, flexible cartilage. These rings act like the rigid wire spirals in a vacuum cleaner hose, holding the passage open at all times. This structural adaptation guarantees an uninterrupted flow of air to and from the lungs. It is a brilliant example of biomechanical engineering in the human body." 
+        },
+        { 
+            q: "Which of the following pathways releases the maximum amount of usable cellular energy?", 
+            options: [
+                "Breakdown of pyruvate in the cytoplasm without oxygen.", 
+                "Breakdown of pyruvate in human muscles into lactic acid.", 
+                "Breakdown of pyruvate in the mitochondria in the presence of oxygen.", 
+                "Breakdown of glucose into pyruvate."
+            ], 
+            correct: 2, 
+            rationale: "Aerobic respiration (in the mitochondria) completely oxidizes the carbon molecules to \\(\\text{CO}_2\\) and \\(\\text{H}_2\\text{O}\\), yielding up to 38 ATP, vastly more than any anaerobic pathway.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "Cellular energy production is heavily dependent on the availability of oxygen. In aerobic respiration, the 3-carbon pyruvate molecules enter the mitochondria, where they are completely dismantled. Through the Krebs cycle and the electron transport chain, the carbon bonds are fully oxidized, yielding carbon dioxide and water as waste products. Because the molecular bonds are completely broken down, this pathway extracts the maximum possible energy, generating roughly 36 to 38 molecules of ATP per molecule of glucose. In contrast, anaerobic pathways like fermentation or lactic acid production leave the carbon molecules partially intact, releasing only a fraction of the available energy (2 ATP). This massive energetic advantage is why complex, multicellular organisms absolutely require oxygen to sustain their high metabolic rates. It explains the evolutionary success of the mitochondrion as the 'powerhouse' of the eukaryotic cell." 
+        },
+        { 
+            q: "The respiratory pigment in human beings that has a very high affinity for oxygen is:", 
+            options: [
+                "Chlorophyll", 
+                "Haemoglobin", 
+                "Melanin", 
+                "Plasma"
+            ], 
+            correct: 1, 
+            rationale: "Haemoglobin is the iron-containing protein in red blood cells that specifically binds to oxygen in the lungs and transports it to all body tissues.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "As animals evolved larger body sizes, simple diffusion became grossly inadequate for delivering oxygen to all internal cells. To overcome this limitation, humans and other vertebrates utilize a specialized respiratory pigment called haemoglobin. Located entirely within the red blood cells, this complex protein contains iron atoms that chemically bind with oxygen molecules with remarkably high affinity. In the oxygen-rich environment of the alveolar capillaries, haemoglobin efficiently loads up with oxygen. As the blood circulates to the oxygen-deprived tissues of the body, the haemoglobin releases its oxygen payload exactly where it is needed for cellular respiration. Without this specialized carrier molecule, our blood could only transport a tiny, insufficient fraction of dissolved oxygen. Haemoglobin is thus the critical biochemical link between the respiratory and circulatory systems." 
+        },
+        { 
+            q: "How is carbon dioxide primarily transported away from the tissues in the human body?", 
+            options: [
+                "It is tightly bound to haemoglobin in red blood cells.", 
+                "It is transported as a gas bubble in the veins.", 
+                "It is transported in the dissolved form in our blood plasma.", 
+                "It is converted into solid calcium carbonate."
+            ], 
+            correct: 2, 
+            rationale: "Unlike oxygen, carbon dioxide is highly soluble in water. Therefore, it is mostly transported in the dissolved form within the blood plasma.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "The transport mechanisms for oxygen and carbon dioxide differ fundamentally due to their distinct chemical properties. While oxygen relies almost entirely on the carrier protein haemoglobin, carbon dioxide utilizes a different primary route. Carbon dioxide is significantly more soluble in water than oxygen. Because blood plasma is mostly water, the vast majority of the carbon dioxide produced by cellular respiration simply dissolves directly into the plasma. It is carried back to the lungs primarily in the form of bicarbonate ions dissolved in the fluid. Once the blood reaches the capillaries surrounding the alveoli, the carbon dioxide diffuses out of the plasma and into the air spaces to be exhaled. This differential transport system prevents the two gases from competing directly for the same molecular space in the blood. It demonstrates the body's efficient use of basic chemical solubility rules." 
+        },
+        { 
+            q: "During the process of inhalation, what distinct physical changes occur in the human chest cavity?", 
+            options: [
+                "Ribs drop, the diaphragm curves upward, and the chest cavity shrinks.", 
+                "Ribs are lifted, the diaphragm is flattened, and the chest cavity becomes larger.", 
+                "Ribs remain stationary while the diaphragm moves upward.", 
+                "The lungs actively expand themselves without muscle assistance."
+            ], 
+            correct: 1, 
+            rationale: "Inhalation is an active process. The diaphragm muscles contract to flatten it, and rib muscles lift the ribs, expanding the chest cavity and drawing air in.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "Breathing is a mechanical process driven by pressure differentials, orchestrated by the muscular system. During inhalation, the dome-shaped diaphragm muscle at the base of the chest contracts and flattens downward. Simultaneously, the external intercostal muscles between the ribs contract, lifting the rib cage upward and outward. These two coordinated movements dramatically increase the volume of the thoracic (chest) cavity. According to Boyle's Law, as the volume of a closed container increases, the internal pressure decreases. This creates a negative pressure inside the lungs relative to the outside atmosphere. As a result, air rushes in through the nostrils to equalize the pressure, filling the expanded alveoli. This intricate biomechanical pump operates continuously and involuntarily to sustain life." 
+        },
+        { 
+            q: "The actual site of gaseous exchange in the human respiratory system, which provides a massive surface area, is the:", 
+            options: [
+                "Trachea", 
+                "Bronchi", 
+                "Alveoli", 
+                "Nasal Passage"
+            ], 
+            correct: 2, 
+            rationale: "The alveoli are microscopic, balloon-like structures at the end of bronchioles. Their extremely thin walls and vast numbers provide the required surface area for gas diffusion.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "The entire architecture of the human respiratory tract is designed to deliver air to the alveoli. These are millions of microscopic, balloon-like air sacs clustered at the very ends of the finest bronchioles. The walls of the alveoli are incredibly thin—only one cell thick—and they are intimately wrapped in a dense network of equally thin blood capillaries. This unique anatomical arrangement minimizes the distance gases must travel. Oxygen diffuses across this microscopic barrier from the alveolar air into the blood, while carbon dioxide diffuses in the opposite direction. If the surface of all the alveoli in a human lung were spread out flat, it would cover roughly 80 square meters, roughly the size of a tennis court. This massive surface area is the key to maximizing the rate of diffusion to support a highly active mammalian metabolism." 
+        },
+        { 
+            q: "Plants exchange gases through stomata, and large intercellular spaces ensure all cells are in contact with air. The direction of diffusion in plants depends upon:", 
+            options: [
+                "Only the time of day.", 
+                "Only the presence of haemoglobin.", 
+                "The environmental conditions and the internal requirements of the plant.", 
+                "The speed of the wind outside the leaf."
+            ], 
+            correct: 2, 
+            rationale: "Gas exchange in plants is not a one-way street; the net diffusion of \\(\\text{O}_2\\) and \\(\\text{CO}_2\\) changes based on whether photosynthesis (day) or respiration (night) is dominating.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "Unlike animals, plants do not possess a centralized respiratory system or specialized gas transport proteins. Instead, they rely heavily on direct, localized diffusion. Leaves feature microscopic pores called stomata, while stems may have lenticels, both of which open into a vast network of intercellular air spaces. This ensures that almost every living plant cell is in direct contact with the atmosphere. The actual direction of gas diffusion through these spaces is highly dynamic. It depends entirely on environmental conditions (like light availability) and the immediate metabolic needs of the plant. During the day, photosynthesis dominates, so carbon dioxide diffuses in and oxygen diffuses out. This elegant, decentralized system perfectly serves the relatively low energy demands of stationary plant life." 
+        },
+        { 
+            q: "ATP (Adenosine Triphosphate) is often called the energy currency of the cell. How is the energy actually released from ATP to drive cellular processes?", 
+            options: [
+                "By breaking the terminal phosphate linkage using water (hydrolysis).", 
+                "By adding a fourth phosphate group.", 
+                "By completely breaking down the adenosine molecule.", 
+                "By converting the ATP into glucose."
+            ], 
+            correct: 0, 
+            rationale: "ATP releases energy when the bond holding the third (terminal) phosphate group is broken using a water molecule, leaving ADP and releasing \\(\\approx 30.5\\) kJ/mol of energy.", 
+            level: "difficult", 
+            category: "Biology", 
+            note: "Adenosine Triphosphate (ATP) is the universal biological battery, storing energy captured during cellular respiration. The molecule consists of an adenosine backbone attached to a tail of three phosphate groups. The bonds connecting these phosphate groups are highly unstable and pack a massive amount of potential energy. When a cell needs energy to perform work—such as muscle contraction, protein synthesis, or nerve impulse conduction—it uses a molecule of water to snap off the terminal (third) phosphate group. This chemical process is known as hydrolysis. Breaking this specific terminal linkage releases a fixed, usable burst of energy equivalent to approximately 30.5 kJ/mol. The resulting molecule, ADP (Adenosine Diphosphate), can then be 'recharged' back into ATP by the mitochondria, creating a continuous, efficient energy cycle." 
+        },
+        { 
+            q: "What physiological mechanism prevents the lungs from collapsing completely during forceful exhalation?", 
+            options: [
+                "The rigidity of the alveoli walls.", 
+                "The residual volume of air.", 
+                "The constant contraction of the diaphragm.", 
+                "The closure of the epiglottis."
+            ], 
+            correct: 1, 
+            rationale: "Even after the most forceful exhalation, a specific amount of air called the 'residual volume' remains in the lungs, keeping the alveoli inflated and allowing continuous gas exchange.", 
+            level: "difficult", 
+            category: "Biology", 
+            note: "The mechanics of human breathing are designed to ensure that the blood is continuously oxygenated, even during the exhalation phase. If we could push every single cubic centimeter of air out of our lungs, the delicate, wet walls of the alveoli would stick together and collapse permanently. To prevent this, human lungs are designed to never completely empty. Even after a maximum forced exhalation, a 'residual volume' of air remains trapped inside the lower airways and alveoli. This leftover air acts as a structural buffer, keeping the tiny air sacs physically inflated. Furthermore, this residual volume ensures that there is a continuous, uninterrupted exchange of gases with the blood while the chest is preparing for the next inhalation. It is a vital safeguard that maintains the continuous flow of oxygen to the brain and heart." 
+        },
+        { 
+            q: "In plants, at night when no photosynthesis is occurring, what is the major gaseous exchange activity?", 
+            options: [
+                "Oxygen elimination", 
+                "Carbon dioxide elimination", 
+                "Nitrogen fixation", 
+                "Water vapor absorption"
+            ], 
+            correct: 1, 
+            rationale: "At night, photosynthesis stops, so \\(\\text{CO}_2\\) is no longer being consumed. However, respiration continues, meaning the plant consumes \\(\\text{O}_2\\) and eliminates \\(\\text{CO}_2\\) as a waste product.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "The gaseous exchange profile of a plant shifts dramatically between day and night due to the interplay of two distinct metabolic processes. Cellular respiration, which consumes oxygen and produces carbon dioxide, occurs continuously 24 hours a day to keep the plant's cells alive. During daylight hours, photosynthesis occurs at a much faster rate than respiration. The plant consumes all the carbon dioxide it produces internally and pulls in far more from the atmosphere, while releasing a massive surplus of oxygen. However, when the sun sets, photosynthesis shuts down completely. Respiration becomes the sole active metabolic process. Consequently, the net movement of gases reverses: the plant begins to absorb oxygen from the air and expel carbon dioxide. This is why it is biologically accurate to say that plants 'breathe' like animals in the dark." 
+        },
+        { 
+            q: "When air passes through the human nasal passage, it is conditioned in several ways. Which of the following is NOT one of those ways?", 
+            options: [
+                "It is filtered by fine hairs.", 
+                "It is moistened by mucus.", 
+                "It is warmed to body temperature.", 
+                "Its oxygen is extracted into the blood."
+            ], 
+            correct: 3, 
+            rationale: "The nasal passage filters, warms, and moistens the air to protect the lungs. No gas exchange (oxygen extraction) occurs until the air reaches the alveoli deep in the lungs.", 
+            level: "easy", 
+            category: "Biology", 
+            note: "The human nasal passage serves as the primary environmental gateway for the respiratory system, acting as a sophisticated air-conditioning unit. When we inhale, the air is rarely at the perfect temperature or humidity for our delicate internal lung tissues, and it is often laden with dust and microbes. The nasal cavity is lined with fine hairs that physically trap larger particulate matter. Furthermore, the inner lining secretes a sticky mucus that catches finer dust and bacteria while simultaneously humidifying the dry incoming air. The rich blood supply in the nasal lining also warms the cold air to match core body temperature. This thorough conditioning process protects the lungs from thermal shock and infection. However, the nasal tissues are too thick for diffusion; actual gas exchange strictly waits until the air reaches the microscopic alveoli." 
+        },
+        { 
+            q: "During the cellular respiration of glucose, the conversion of pyruvate to carbon dioxide and water strictly occurs in the:", 
+            options: [
+                "Cytoplasm", 
+                "Mitochondria", 
+                "Ribosomes", 
+                "Golgi apparatus"
+            ], 
+            correct: 1, 
+            rationale: "While the initial breakdown of glucose to pyruvate (glycolysis) occurs in the cytoplasm, the complete oxidation of pyruvate to \\(\\text{CO}_2\\) and \\(\\text{H}_2\\text{O}\\) using oxygen happens exclusively in the mitochondria.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "Cellular respiration is a strictly compartmentalized process within eukaryotic cells. The first phase, glycolysis, happens in the aqueous fluid of the cytoplasm, breaking a 6-carbon glucose into two 3-carbon pyruvate molecules. If oxygen is present, these pyruvate molecules are transported across the double membrane of the mitochondria. The mitochondrion provides a highly specialized chemical environment loaded with specific enzymes required for the Krebs cycle and the electron transport chain. It is solely within this organelle that the pyruvate is completely broken down and oxidized. The carbon atoms are stripped away to form carbon dioxide, and the hydrogen atoms combine with oxygen to form water. This mitochondrial phase is what generates the massive payload of 36 ATP molecules. The strict location of this process highlights the mitochondrion's absolute role as the cellular powerhouse." 
+        },
+        { 
+            q: "What is the primary reason that ATP is utilized universally across almost all life forms?", 
+            options: [
+                "It is highly stable and cannot be broken down.", 
+                "It can drive endothermic reactions requiring energy.", 
+                "It acts as an enzyme to digest food.", 
+                "It transports oxygen in the absence of haemoglobin."
+            ], 
+            correct: 1, 
+            rationale: "ATP stores energy from respiration and is then broken down to drive endothermic (energy-requiring) reactions within the cell, such as muscle contraction or protein synthesis.", 
+            level: "difficult", 
+            category: "Biology", 
+            note: "The genius of biological systems lies in their ability to couple energy-yielding reactions with energy-consuming ones. Cellular respiration is an exothermic process, meaning it releases chemical energy. However, the cell cannot use this raw energy directly; it must be captured and packaged. ATP serves as this universal biological packaging. The energy from respiration is used to force a third phosphate group onto an ADP molecule, creating ATP. When the cell needs to perform an endothermic reaction—a task that requires an input of energy, like moving a muscle or building a protein—it hydrolyzes the ATP back into ADP. The energy released by breaking this specific phosphate bond perfectly drives the endothermic task. This universal mechanism allows a single 'currency' to power thousands of vastly different chemical processes across all domains of life." 
+        },
+        { 
+            q: "Which organism relies on a network of highly branched tubes (tracheae) reaching directly into tissues for respiration?", 
+            options: [
+                "Fishes", 
+                "Earthworms", 
+                "Insects (like grasshoppers)", 
+                "Amphibians"
+            ], 
+            correct: 2, 
+            rationale: "Insects do not use blood to carry oxygen. They rely on a tracheal system—a network of tubes that deliver oxygen directly from the air to every cell in the body.", 
+            level: "medium", 
+            category: "Biology", 
+            note: "Evolution has produced diverse solutions to the problem of gas exchange. While vertebrates rely on a circulatory system (blood) to ferry oxygen from the lungs or gills to the tissues, insects utilize a completely different approach. Insects like grasshoppers and cockroaches possess a tracheal system. This consists of tiny pores on their exoskeleton called spiracles that open into a highly branched network of microscopic tubes called tracheae. These tubes branch continuously until they reach almost every single cell in the insect's body. Oxygen diffuses directly from the air inside the tubes into the cellular fluid, completely bypassing the need for a respiratory pigment like haemoglobin. This direct-delivery system is highly efficient for small organisms but severely limits the maximum body size an insect can attain due to the physical limits of gas diffusion." 
+        },
+        { 
+            q: "Cramps in athletes are caused by the sudden buildup of lactic acid. From an organic chemistry perspective, lactic acid is a:", 
+            options: [
+                "2-carbon molecule", 
+                "3-carbon molecule", 
+                "6-carbon molecule", 
+                "Polymer of glucose"
+            ], 
+            correct: 1, 
+            rationale: "Glucose (6-carbon) breaks down into pyruvate (3-carbon). In anaerobic muscle respiration, pyruvate is converted directly to lactic acid, preserving the 3-carbon structure.", 
+            level: "difficult", 
+            category: "Biology", 
+            note: "Tracking the carbon atoms through metabolic pathways is crucial for understanding cellular respiration. The process begins with glucose, a stable 6-carbon sugar. In the cytoplasm, glycolysis splits this molecule perfectly in half, yielding two molecules of pyruvate, each containing 3 carbon atoms. During vigorous exercise, the muscle cells become temporarily starved of oxygen. To keep generating a minimal amount of ATP, the cells cannot send the pyruvate to the mitochondria for complete breakdown. Instead, an enzyme immediately converts the 3-carbon pyruvate into lactic acid. Because no carbon dioxide is released during this specific conversion, the lactic acid molecule retains all 3 carbon atoms of the pyruvate. This structural fact explains why lactic acid buildup represents 'trapped' energy that the body will later recover when oxygen is restored." 
+        },
+        { 
+            q: "The energy equivalent released upon the hydrolysis of one mole of ATP inside a cell is approximately:", 
+            options: [
+                "\\(3.05\\) kJ/mol", 
+                "\\(30.5\\) kJ/mol", 
+                "\\(305\\) kJ/mol", 
+                "\\(0.305\\) kJ/mol"
+            ], 
+            correct: 1, 
+            rationale: "According to NCERT data, the hydrolysis of the terminal phosphate bond in ATP yields a fixed energy release equivalent to \\(30.5\\) kJ/mol.", 
+            level: "difficult", 
+            category: "Biology", 
+            note: "The efficiency of a cell is quantified by the exact amount of energy it can harness and release on demand. The high-energy bond connecting the second and third phosphate groups in ATP is perfectly calibrated for biological work. When an enzyme introduces a water molecule to break this specific terminal bond (hydrolysis), the reaction is highly exothermic. In standard biological conditions, this cleavage releases approximately 30.5 kilojoules of energy per mole of ATP. This is the precise 'quantum' of energy the cell uses to drive endothermic reactions, power ion pumps across cell membranes, and fuel muscle contractions. Knowing this specific value allows scientists to calculate the thermodynamic efficiency of cellular respiration and understand the energetic costs of various biological functions. It is the fundamental metric of cellular economics." 
+        }
+    ];
 
-        // Sign In Logic
-        document.getElementById('google-signin').onclick = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                authStatus.innerText = "Error signing in. Please check Firebase config.";
-                console.error(error);
-            }
-        };
+    let currentIdx = 0;
+    let score = 0;
 
-        // Sign Out Logic
-        document.getElementById('signout').onclick = () => {
-            signOut(auth);
-        };
+    function startQuiz() {
+        document.getElementById('landing').classList.add('hidden');
+        document.getElementById('quiz-container').classList.remove('hidden');
+        renderQuestion();
+    }
 
-        // Auth State Listener
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loginOverlay.classList.add('hidden-section');
-                mainApp.classList.remove('hidden-section');
-                
-                // Update UI with User Data
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('user-email').innerText = user.email;
-                document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/40';
-                
-                loadGames(); // Load games from our "One-Click" engine
-            } else {
-                loginOverlay.classList.remove('hidden-section');
-                mainApp.classList.add('hidden-section');
-            }
-        });
+    function renderQuestion() {
+        const q = questions[currentIdx];
+        
+        // Reset UI
+        document.getElementById('insight-pane').classList.add('w-0', 'opacity-0');
+        document.getElementById('insight-pane').classList.remove('w-1/3', 'opacity-100', 'hidden');
+        document.getElementById('note-box').classList.add('hidden');
+        document.getElementById('rationale-box').classList.add('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('question-pane').classList.remove('w-2/3');
+        document.getElementById('question-pane').classList.add('flex-1');
+        
+        // Update Meta
+        document.getElementById('q-category').innerText = q.category;
+        document.getElementById('q-counter').innerText = `Question ${String(currentIdx + 1).padStart(2, '0')} of 20`;
+        document.getElementById('diff-tag').innerText = `LEVEL: ${q.level.toUpperCase()}`;
+        document.getElementById('progress-fill').style.width = `${((currentIdx) / 20) * 100}%`; 
 
-        // ==========================================
-        // THE "ONE-CLICK" GAME ENGINE
-        // ==========================================
-        const games = [
-            { id: 1, title: "Tactical Scholar v1", cat: "Strategy", icon: "fa-chess-knight", color: "text-amber-400" },
-            { id: 2, title: "Logic Scorer", cat: "Puzzle", icon: "fa-calculator", color: "text-emerald-400" },
-            { id: 3, title: "AI Prompt War", cat: "AI Game", icon: "fa-terminal", color: "text-pink-400" }
-        ];
+        // Update Text
+        document.getElementById('question-text').innerHTML = q.q;
+        
+        const grid = document.getElementById('options-grid');
+        grid.innerHTML = q.options.map((opt, i) => `
+            <button onclick="handleSelect(${i})" class="option-btn text-left p-3 md:p-4 rounded-xl border border-slate-200 dark:border-slate-800 transition-all font-medium flex items-center gap-3 md:gap-4 hover:shadow-md">
+                <span class="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-sm border border-slate-200 dark:border-slate-700">
+                    ${String.fromCharCode(65 + i)}
+                </span>
+                <span class="text-sm md:text-base">${opt}</span>
+            </button>
+        `).join('');
 
-        function loadGames() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = '';
-            games.forEach(game => {
-                const card = `
-                    <div class="glass-card p-5 rounded-xl cursor-pointer">
-                        <div class="${game.color} text-2xl mb-4"><i class="fas ${game.icon}"></i></div>
-                        <h4 class="font-bold text-lg">${game.title}</h4>
-                        <p class="text-xs text-slate-500 mb-4">${game.cat}</p>
-                        <button class="text-xs font-bold text-blue-400 hover:text-blue-300">PLAY NOW</button>
-                    </div>
-                `;
-                grid.innerHTML += card;
-            });
+        // Typeset MathJax dynamically for the newly injected HTML
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById('question-pane')]).catch((err) => console.log('MathJax typeset failed: ' + err.message));
+        }
+    }
+
+    function handleSelect(idx) {
+        const q = questions[currentIdx];
+        const buttons = document.querySelectorAll('.option-btn');
+        
+        buttons.forEach(btn => btn.disabled = true);
+        
+        // Logic for correctness
+        if (idx === q.correct) {
+            buttons[idx].classList.add('correct');
+            score++;
+        } else {
+            buttons[idx].classList.add('incorrect');
+            buttons[q.correct].classList.add('correct');
         }
 
-        // Simple "One-Click" simulation
-        document.getElementById('add-game-trigger').onclick = () => {
-            const name = prompt("Enter Game Title:");
-            if(name) {
-                games.push({ id: Date.now(), title: name, cat: "User Added", icon: "fa-gamepad", color: "text-blue-400" });
-                loadGames();
-            }
-        };
+        document.getElementById('current-score').innerText = String(score).padStart(2, '0');
+        
+        // Show Insight Pane (Split view)
+        const pane = document.getElementById('insight-pane');
+        const main = document.getElementById('question-pane');
+        
+        pane.classList.remove('hidden');
+        setTimeout(() => {
+            main.classList.remove('flex-1');
+            main.classList.add('w-full', 'lg:w-3/5');
+            pane.classList.remove('w-0', 'opacity-0');
+            pane.classList.add('w-full', 'lg:w-2/5', 'opacity-100');
+            
+            // Show content
+            document.getElementById('rationale-text').innerHTML = q.rationale;
+            document.getElementById('note-text').innerHTML = q.note;
+            document.getElementById('rationale-box').classList.remove('hidden');
+            document.getElementById('note-box').classList.remove('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
 
-    </script>
+            // Typeset MathJax dynamically for the rationale and notes
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('insight-pane')]).catch((err) => console.log('MathJax typeset failed: ' + err.message));
+            }
+        }, 50);
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            renderQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-container').classList.add('hidden');
+        document.getElementById('results').classList.remove('hidden');
+        
+        const percent = Math.round((score / questions.length) * 100);
+        document.getElementById('final-pct').innerText = `${percent}%`;
+        document.getElementById('final-correct').innerText = score;
+        document.getElementById('final-wrong').innerText = questions.length - score;
+        
+        const circle = document.getElementById('score-circle');
+        const dashoffset = 439.6 - (439.6 * percent / 100);
+        circle.style.strokeDashoffset = dashoffset;
+    }
+</script>
 </body>
 </html>
