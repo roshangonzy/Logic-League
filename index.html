@@ -99,6 +99,21 @@
             display: none;
             font-weight: bold;
         }
+        
+        .troubleshoot-btn {
+            margin-top: 25px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        
+        .troubleshoot-btn:hover {
+            color: var(--danger);
+        }
 
         /* --- App Styles --- */
         #app-content {
@@ -356,6 +371,9 @@
         
         <button class="login-btn" onclick="handleLogin()">Login to Dashboard</button>
         <div id="login-error" class="error-msg">Invalid username or password.</div>
+        
+        <!-- Troubleshooting Button -->
+        <button class="troubleshoot-btn" onclick="clearAppData()">Clear Local Data (Troubleshooting)</button>
     </div>
 </div>
 
@@ -736,6 +754,15 @@
         if(!loggedInUser) return;
         localStorage.setItem(`physicsQuizAnswers_${loggedInUser}`, JSON.stringify(userAnswers));
         localStorage.setItem(`physicsQuizScores_${loggedInUser}`, JSON.stringify(quizScores));
+    }
+    
+    // Feature to forcefully wipe old/broken local storage
+    function clearAppData() {
+        if (confirm("Are you sure you want to completely clear the local data? This will fix caching issues but will erase all scores and answers for all accounts on this device.")) {
+            localStorage.clear();
+            alert("Local storage wiped successfully. Reloading the app...");
+            location.reload(true);
+        }
     }
 
     // --- LOGIN / LOGOUT LOGIC ---
