@@ -49,12 +49,38 @@
             background: var(--surface);
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
 
         header h1 {
             color: var(--primary-dark);
             font-size: 2rem;
             margin-bottom: 5px;
+        }
+
+        .export-all-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background-color: var(--text-main);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .export-all-btn:hover { opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            .export-all-btn {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 15px;
+            }
         }
 
         /* Level Tabs */
@@ -99,9 +125,27 @@
             font-size: 1rem;
             color: var(--text-light);
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Score Badge on Tabs */
+        .score-badge {
+            background: #e2e8f0;
+            color: var(--text-main);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .tab-btn.active .score-badge {
+            background: white;
+            color: var(--primary);
+        }
 
         /* Main Content Area */
         .content-card {
@@ -186,6 +230,7 @@
         .btn-primary { background-color: var(--primary); margin-top: 20px; }
         .btn-secondary { background-color: var(--text-light); margin-top: 10px; }
         .btn-dark { background-color: var(--text-main); margin-top: 10px; }
+        .btn-danger { background-color: var(--danger); margin-top: 10px; }
 
         /* Report Styles */
         .report-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
@@ -211,7 +256,8 @@
 <div class="container">
     <header>
         <h1>Physics Learning Quiz</h1>
-        <p>ICSE Grade 10 | 40 Marks per Quiz</p>
+        <p>ICSE Grade 10 | Selina Textbook | 40 Marks per Quiz</p>
+        <button class="export-all-btn" onclick="exportAllScores()">📄 Export All Scores</button>
     </header>
 
     <!-- Difficulty Level Tabs -->
@@ -222,16 +268,18 @@
 
     <!-- Chapter Navigation Tabs -->
     <div class="tabs" id="tabs-container">
-        <button class="tab-btn active" id="tab-ch1" onclick="loadQuiz('ch1')">Chapter 1: Force</button>
-        <button class="tab-btn" id="tab-ch2" onclick="loadQuiz('ch2')">Chapter 2: Work & Energy</button>
-        <button class="tab-btn" id="tab-ch3" onclick="loadQuiz('ch3')">Chapter 3: Machines</button>
+        <button class="tab-btn active" id="tab-ch1" onclick="loadQuiz('ch1')">Chapter 1: Force <span id="badge-ch1"></span></button>
+        <button class="tab-btn" id="tab-ch2" onclick="loadQuiz('ch2')">Chapter 2: Work & Energy <span id="badge-ch2"></span></button>
+        <button class="tab-btn" id="tab-ch3" onclick="loadQuiz('ch3')">Chapter 3: Machines <span id="badge-ch3"></span></button>
     </div>
 
     <!-- Quiz Container -->
     <div id="quiz-view" class="content-card active">
         <h2 id="quiz-title" style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;"></h2>
         <div id="questions-container"></div>
-        <button class="btn btn-primary" onclick="submitQuiz()">Submit & Get Final Report</button>
+        <div id="submit-container">
+            <!-- Submit or View Report button injected here -->
+        </div>
     </div>
 
     <!-- Report Container -->
@@ -239,14 +287,14 @@
         <div id="printable-report">
             <!-- Report content injected here -->
         </div>
-        <button class="btn btn-dark" onclick="exportPDF()">📄 Export Report as PDF</button>
-        <button class="btn btn-secondary" onclick="backToQuizzes()">↩ Retake / Change Quiz</button>
+        <button class="btn btn-dark" onclick="exportPDF()">📄 Export Detailed Report as PDF</button>
+        <button class="btn btn-primary" onclick="backToQuizzes()">↩ Back to Quizzes</button>
+        <button class="btn btn-danger" onclick="retakeQuiz()">↻ Clear Points & Retake This Quiz</button>
     </div>
 </div>
 
 <script>
     // --- 240 QUESTIONS DATASET (40 PER CHAPTER PER LEVEL) ---
-    // Strictly adhering to very basic Selina ICSE Grade 10 concepts.
     const quizData = {
         easy: {
             ch1: {
@@ -531,6 +579,12 @@
         easy: { ch1: {}, ch2: {}, ch3: {} },
         medium: { ch1: {}, ch2: {}, ch3: {} }
     };
+    
+    // Explicitly track calculated scores
+    let quizScores = {
+        easy: { ch1: null, ch2: null, ch3: null },
+        medium: { ch1: null, ch2: null, ch3: null }
+    };
 
     // --- FUNCTIONS ---
     function init() {
@@ -548,12 +602,24 @@
         loadQuiz(currentChapter);
     }
 
+    function updateTabScores() {
+        const c1 = quizScores[currentLevel]['ch1'];
+        const c2 = quizScores[currentLevel]['ch2'];
+        const c3 = quizScores[currentLevel]['ch3'];
+        
+        document.getElementById('badge-ch1').innerHTML = c1 !== null ? `<span class="score-badge">${c1}/40</span>` : '';
+        document.getElementById('badge-ch2').innerHTML = c2 !== null ? `<span class="score-badge">${c2}/40</span>` : '';
+        document.getElementById('badge-ch3').innerHTML = c3 !== null ? `<span class="score-badge">${c3}/40</span>` : '';
+    }
+
     function loadQuiz(chapterId) {
         currentChapter = chapterId;
         
         // Update Chapter Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${chapterId}`).classList.add('active');
+        
+        updateTabScores();
 
         // Show quiz view, hide report view
         document.getElementById('quiz-view').classList.add('active');
@@ -623,6 +689,14 @@
             `;
             container.appendChild(qDiv);
         });
+
+        // Setup Submit/View Report Button Logic
+        const submitContainer = document.getElementById('submit-container');
+        if (quizScores[currentLevel][chapterId] !== null) {
+            submitContainer.innerHTML = `<button class="btn btn-primary" onclick="showReport()">📊 View Report (Score: ${quizScores[currentLevel][chapterId]}/40)</button>`;
+        } else {
+            submitContainer.innerHTML = `<button class="btn btn-primary" onclick="submitQuiz()">Submit & Get Final Report</button>`;
+        }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -675,24 +749,33 @@
             if(!confirmSubmit) return;
         }
 
-        generateReport(activeData);
+        // Calculate and save score persistently
+        let score = 0;
+        activeData.questions.forEach((qObj, index) => {
+            if (userAnswers[currentLevel][currentChapter][index] === qObj.a) {
+                score++;
+            }
+        });
+        quizScores[currentLevel][currentChapter] = score;
+        updateTabScores();
+        showReport();
     }
 
-    function generateReport(data) {
+    window.showReport = function() {
+        const data = quizData[currentLevel][currentChapter];
+        const score = quizScores[currentLevel][currentChapter];
+
         // Hide quiz, show report
         document.getElementById('quiz-view').classList.remove('active');
         document.getElementById('report-view').classList.add('active');
         
         const reportContainer = document.getElementById('printable-report');
-        let score = 0;
         let reviewHTML = '';
 
         data.questions.forEach((qObj, index) => {
             const userAns = userAnswers[currentLevel][currentChapter][index];
             const isAnswered = userAns !== undefined;
             const isCorrect = isAnswered && (userAns === qObj.a);
-            
-            if (isCorrect) score++;
 
             const badgeClass = isCorrect ? 'badge-correct' : 'badge-incorrect';
             const badgeText = isCorrect ? '✓ Correct' : '✗ Incorrect';
@@ -740,10 +823,17 @@
     }
 
     window.backToQuizzes = function() {
-        // Clear answers for current level & chapter to allow retake
-        userAnswers[currentLevel][currentChapter] = {};
+        // Navigate back WITHOUT clearing answers
+        loadQuiz(currentChapter);
+    }
+    
+    window.retakeQuiz = function() {
+        // Explicitly clear answers for retake
+        const confirmRetake = confirm(`Are you sure you want to erase your score and retake this quiz?`);
+        if(!confirmRetake) return;
         
-        // Reload the current quiz view
+        userAnswers[currentLevel][currentChapter] = {};
+        quizScores[currentLevel][currentChapter] = null;
         loadQuiz(currentChapter);
     }
 
@@ -763,6 +853,51 @@
 
         // Generate and save
         html2pdf().set(opt).from(element).save();
+    }
+
+    window.exportAllScores = function() {
+        // Create a temporary container for the master report
+        const tempDiv = document.createElement('div');
+        tempDiv.style.padding = '30px';
+        tempDiv.style.fontFamily = 'sans-serif';
+        tempDiv.style.color = '#0f172a';
+        
+        const getScoreText = (val) => val !== null ? `<strong>${val} / 40</strong>` : '<span style="color: #64748b;">Not Attempted</span>';
+
+        tempDiv.innerHTML = `
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h1 style="color: #2563eb; font-size: 28px;">Physics Learning Quiz - Master Score Report</h1>
+                <p style="font-size: 16px; color: #64748b;">ICSE Grade 10 | Generated on: ${new Date().toLocaleDateString()}</p>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <h2 style="background: #10b981; color: white; padding: 10px; border-radius: 6px;">Easy Level Scores</h2>
+                <ul style="list-style: none; padding: 0; font-size: 18px; line-height: 2;">
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 1: Force - <span style="float: right;">${getScoreText(quizScores.easy.ch1)}</span></li>
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 2: Work & Energy - <span style="float: right;">${getScoreText(quizScores.easy.ch2)}</span></li>
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 3: Machines - <span style="float: right;">${getScoreText(quizScores.easy.ch3)}</span></li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <h2 style="background: #f59e0b; color: white; padding: 10px; border-radius: 6px;">Medium Level Scores</h2>
+                <ul style="list-style: none; padding: 0; font-size: 18px; line-height: 2;">
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 1: Force - <span style="float: right;">${getScoreText(quizScores.medium.ch1)}</span></li>
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 2: Work & Energy - <span style="float: right;">${getScoreText(quizScores.medium.ch2)}</span></li>
+                    <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">Chapter 3: Machines - <span style="float: right;">${getScoreText(quizScores.medium.ch3)}</span></li>
+                </ul>
+            </div>
+        `;
+
+        const opt = {
+            margin:       15,
+            filename:     'Physics_Master_Score_Report.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(tempDiv).save();
     }
 
     // Start App
