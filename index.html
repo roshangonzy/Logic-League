@@ -37,6 +37,74 @@
             padding: 20px;
         }
 
+        /* --- Login Overlay Styles --- */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .login-btn:hover { opacity: 0.9; }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* --- App Styles --- */
+        #app-content {
+            display: none; /* Hidden until logged in */
+        }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -57,6 +125,30 @@
             font-size: 2rem;
             margin-bottom: 5px;
         }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 1.05rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 5px 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover { background: #dc2626; }
 
         .export-all-btn {
             position: absolute;
@@ -253,10 +345,31 @@
 </head>
 <body>
 
-<div class="container">
+<!-- Login Screen -->
+<div id="login-overlay">
+    <div class="login-card">
+        <h2 style="color: var(--primary-dark); margin-bottom: 5px;">ICSE Physics Quiz</h2>
+        <p style="color: var(--text-light); margin-bottom: 25px;">Please login to continue</p>
+        
+        <input type="text" id="username" class="login-input" placeholder="Username">
+        <input type="password" id="password" class="login-input" placeholder="Password" onkeypress="handleEnter(event)">
+        
+        <button class="login-btn" onclick="handleLogin()">Login to Dashboard</button>
+        <div id="login-error" class="error-msg">Invalid username or password.</div>
+    </div>
+</div>
+
+<!-- Main Application (Hidden initially) -->
+<div id="app-content" class="container">
     <header>
         <h1>Physics Learning Quiz</h1>
         <p>ICSE Grade 10 | Selina Textbook | 40 Marks per Quiz</p>
+        
+        <div class="user-info">
+            <span id="welcome-text"></span>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+
         <button class="export-all-btn" onclick="exportAllScores()">📄 Export All Scores</button>
     </header>
 
@@ -294,6 +407,12 @@
 </div>
 
 <script>
+    // --- LOGIN ACCOUNTS ---
+    const validAccounts = {
+        'sambhav': '1234',
+        'roshan': '1234'
+    };
+
     // --- 240 QUESTIONS DATASET (40 PER CHAPTER PER LEVEL) ---
     const quizData = {
         easy: {
@@ -575,32 +694,77 @@
     // --- APPLICATION STATE (WITH LOCAL STORAGE) ---
     let currentLevel = 'easy';
     let currentChapter = 'ch1';
-    
-    // Load saved data from localStorage if it exists
-    const savedAnswers = localStorage.getItem('physicsQuizAnswers');
-    const savedScores = localStorage.getItem('physicsQuizScores');
+    let loggedInUser = localStorage.getItem('physicsQuizUser') || null;
+    let userAnswers = {};
+    let quizScores = {};
 
-    let userAnswers = savedAnswers ? JSON.parse(savedAnswers) : {
-        easy: { ch1: {}, ch2: {}, ch3: {} },
-        medium: { ch1: {}, ch2: {}, ch3: {} }
-    };
-    
-    let quizScores = savedScores ? JSON.parse(savedScores) : {
-        easy: { ch1: null, ch2: null, ch3: null },
-        medium: { ch1: null, ch2: null, ch3: null }
-    };
+    function initApp() {
+        if (!loggedInUser) {
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'none';
+            return;
+        }
 
-    // Helper to persist state to device storage
-    function saveState() {
-        localStorage.setItem('physicsQuizAnswers', JSON.stringify(userAnswers));
-        localStorage.setItem('physicsQuizScores', JSON.stringify(quizScores));
-    }
+        // Hide login, show app
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        
+        // Formatting name (e.g., 'roshan' -> 'Roshan')
+        const displayName = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+        document.getElementById('welcome-text').innerText = `Welcome, ${displayName}`;
 
-    // --- FUNCTIONS ---
-    function init() {
+        // Load saved data specific to the logged-in user
+        const savedAnswers = localStorage.getItem(`physicsQuizAnswers_${loggedInUser}`);
+        const savedScores = localStorage.getItem(`physicsQuizScores_${loggedInUser}`);
+
+        userAnswers = savedAnswers ? JSON.parse(savedAnswers) : {
+            easy: { ch1: {}, ch2: {}, ch3: {} },
+            medium: { ch1: {}, ch2: {}, ch3: {} }
+        };
+        
+        quizScores = savedScores ? JSON.parse(savedScores) : {
+            easy: { ch1: null, ch2: null, ch3: null },
+            medium: { ch1: null, ch2: null, ch3: null }
+        };
+
+        // Start Quiz Engine
         loadQuiz('ch1');
     }
 
+    // Helper to persist state to device storage using dynamic keys
+    function saveState() {
+        if(!loggedInUser) return;
+        localStorage.setItem(`physicsQuizAnswers_${loggedInUser}`, JSON.stringify(userAnswers));
+        localStorage.setItem(`physicsQuizScores_${loggedInUser}`, JSON.stringify(quizScores));
+    }
+
+    // --- LOGIN / LOGOUT LOGIC ---
+    function handleLogin() {
+        const userField = document.getElementById('username').value.trim().toLowerCase();
+        const passField = document.getElementById('password').value.trim();
+
+        if (validAccounts[userField] && validAccounts[userField] === passField) {
+            loggedInUser = userField;
+            localStorage.setItem('physicsQuizUser', loggedInUser);
+            document.getElementById('login-error').style.display = 'none';
+            initApp();
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('physicsQuizUser');
+        location.reload();
+    }
+
+    // --- QUIZ FUNCTIONS ---
     function setLevel(level) {
         currentLevel = level;
         
@@ -815,12 +979,13 @@
 
         const percentage = ((score / data.questions.length) * 100).toFixed(0);
         const dateString = new Date().toLocaleDateString();
+        const displayName = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
 
         reportContainer.innerHTML = `
             <div class="report-header">
                 <h2>Performance Report</h2>
                 <h3 style="color: var(--text-light);">${data.title}</h3>
-                <p>Generated on: ${dateString}</p>
+                <p>Student: <strong>${displayName}</strong> | Generated on: ${dateString}</p>
             </div>
             
             <div class="score-box">
@@ -855,7 +1020,7 @@
 
     window.exportPDF = function() {
         const element = document.getElementById('printable-report');
-        const filename = `Physics_Report_${currentLevel}_${currentChapter}.pdf`;
+        const filename = `Physics_Report_${loggedInUser}_${currentLevel}_${currentChapter}.pdf`;
         
         // Configure PDF options
         const opt = {
@@ -886,11 +1051,13 @@
             }
             return '<span style="color: #64748b;">Not Attempted</span>';
         };
+        
+        const displayName = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
 
         tempDiv.innerHTML = `
             <div style="text-align: center; margin-bottom: 40px;">
                 <h1 style="color: #2563eb; font-size: 28px;">Physics Learning Quiz - Master Score Report</h1>
-                <p style="font-size: 16px; color: #64748b;">ICSE Grade 10 | Generated on: ${new Date().toLocaleDateString()}</p>
+                <p style="font-size: 16px; color: #64748b;">Student: <strong>${displayName}</strong> | ICSE Grade 10 | Generated on: ${new Date().toLocaleDateString()}</p>
             </div>
             
             <div style="margin-bottom: 30px;">
@@ -914,7 +1081,7 @@
 
         const opt = {
             margin:       15,
-            filename:     'Physics_Master_Score_Report.pdf',
+            filename:     `Physics_Master_Score_Report_${loggedInUser}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -923,8 +1090,8 @@
         html2pdf().set(opt).from(tempDiv).save();
     }
 
-    // Start App
-    window.onload = init;
+    // Start App verification
+    window.onload = initApp;
 </script>
 
 </body>
